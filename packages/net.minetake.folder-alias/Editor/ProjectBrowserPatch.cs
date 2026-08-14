@@ -30,7 +30,6 @@ namespace Minetake.FolderAlias.Editor
         private static MethodInfo resetProjectBrowserViews;
         private static FieldInfo treeRootItemField;
         private static FieldInfo treeRowsField;
-        private static FieldInfo treeGuiControllerField;
         private static FieldInfo filterResultNameField;
         private static PropertyInfo filterResultGuidProperty;
         private static PropertyInfo renameNameProperty;
@@ -43,8 +42,6 @@ namespace Minetake.FolderAlias.Editor
         private static FieldInfo gridLabelStyleField;
         private static MethodInfo listDrawItemMethod;
         private static PropertyInfo treeFoldersFirstProperty;
-        private static PropertyInfo treeControllerDataProperty;
-        private static PropertyInfo treeIsSearchingProperty;
         private static Harmony harmony;
 
         [InitializeOnLoadMethod]
@@ -69,9 +66,15 @@ namespace Minetake.FolderAlias.Editor
             harmony.Patch(RequireMethod(assetsTreeViewGuiType, "RenameEnded"), renamePrefix, renamePostfix);
             harmony.Patch(RequireMethod(objectListAreaType, "RenameEnded"), renamePrefix, renamePostfix);
 
+            var treeDataFetchedPostfix = new HarmonyMethod(
+                typeof(ProjectBrowserPatch),
+                nameof(AfterTreeDataFetched));
             harmony.Patch(
-                RequireMethod(assetsTreeViewGuiType, "BeginRowGUI"),
-                prefix: new HarmonyMethod(typeof(ProjectBrowserPatch), nameof(BeforeTreeRowsDrawn)));
+                RequireMethod(assetsTreeViewDataSourceType, "FetchData"),
+                postfix: treeDataFetchedPostfix);
+            harmony.Patch(
+                RequireMethod(projectBrowserColumnOneTreeViewDataSourceType, "FetchData"),
+                postfix: treeDataFetchedPostfix);
 
             var filteredHierarchyComparerType = RequireType("UnityEditor.FilteredHierarchy+<>c");
             var filterResultComparerPrefix = new HarmonyMethod(
@@ -129,27 +132,21 @@ namespace Minetake.FolderAlias.Editor
             }
         }
 
-        private static void BeforeTreeRowsDrawn(object __instance)
+        private static void AfterTreeDataFetched(object __instance)
         {
-            var treeController = treeGuiControllerField.GetValue(__instance)
-                                 ?? throw new InvalidOperationException("Unity returned no TreeViewController instance.");
-            if ((bool)treeIsSearchingProperty.GetValue(treeController)) return;
-
-            var dataSource = treeControllerDataProperty.GetValue(treeController)
-                             ?? throw new InvalidOperationException("Unity returned no TreeViewDataSource instance.");
-            var isAssetsTree = assetsTreeViewDataSourceType.IsInstanceOfType(dataSource);
-            var isColumnOneTree = projectBrowserColumnOneTreeViewDataSourceType.IsInstanceOfType(dataSource);
+            var isAssetsTree = assetsTreeViewDataSourceType.IsInstanceOfType(__instance);
+            var isColumnOneTree = projectBrowserColumnOneTreeViewDataSourceType.IsInstanceOfType(__instance);
             if (!isAssetsTree && !isColumnOneTree) return;
 
-            var root = treeRootItemField.GetValue(dataSource) as TreeViewItem
+            var root = treeRootItemField.GetValue(__instance) as TreeViewItem
                        ?? throw new InvalidOperationException("Unity returned no Project Browser tree root item.");
-            var foldersFirst = isColumnOneTree || (bool)treeFoldersFirstProperty.GetValue(dataSource);
+            var foldersFirst = isColumnOneTree || (bool)treeFoldersFirstProperty.GetValue(__instance);
             if (!SortTreeChildrenByDisplayName(root, foldersFirst)) return;
 
-            var rows = treeRowsField.GetValue(dataSource) as System.Collections.Generic.IList<TreeViewItem>
+            var rows = treeRowsField.GetValue(__instance) as System.Collections.Generic.IList<TreeViewItem>
                        ?? throw new InvalidOperationException("Unity returned no Project Browser tree row collection.");
             rows.Clear();
-            treeGetVisibleItemsRecursive.Invoke(dataSource, new object[] { root, rows });
+            treeGetVisibleItemsRecursive.Invoke(__instance, new object[] { root, rows });
         }
 
         private static bool SortTreeChildrenByDisplayName(TreeViewItem parent, bool foldersFirst)
@@ -393,18 +390,13 @@ namespace Minetake.FolderAlias.Editor
             treeFoldersFirstProperty = RequireProperty(assetsTreeViewDataSourceType, "foldersFirst");
 
             var treeViewDataSourceType = RequireType("UnityEditor.IMGUI.Controls.TreeViewDataSource");
-            var treeViewControllerType = RequireType("UnityEditor.IMGUI.Controls.TreeViewController");
-            var treeViewGuiType = RequireType("UnityEditor.IMGUI.Controls.TreeViewGUI");
             treeRootItemField = RequireField(treeViewDataSourceType, "m_RootItem");
             treeRowsField = RequireField(treeViewDataSourceType, "m_Rows");
-            treeGuiControllerField = RequireField(treeViewGuiType, "m_TreeView");
             treeGetVisibleItemsRecursive = RequireMethod(
                 treeViewDataSourceType,
                 "GetVisibleItemsRecursive",
                 typeof(TreeViewItem),
                 typeof(System.Collections.Generic.IList<TreeViewItem>));
-            treeControllerDataProperty = RequireProperty(treeViewControllerType, "data");
-            treeIsSearchingProperty = RequireProperty(treeViewControllerType, "isSearching");
 
             var treeStylesType = RequireType("UnityEditor.IMGUI.Controls.TreeViewGUI+Styles");
             treeLineStyleField = RequireField(treeStylesType, "lineStyle");
