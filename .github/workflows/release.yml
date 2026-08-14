@@ -14,30 +14,45 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Validate tag and package version
-        shell: pwsh
         run: |
-          $listing = Get-Content -Raw vpm.json | ConvertFrom-Json
-          $matches = Get-ChildItem packages -Directory | ForEach-Object {
-            $manifestPath = Join-Path $_.FullName 'package.json'
-            $manifest = Get-Content -Raw $manifestPath | ConvertFrom-Json
-            if ($env:GITHUB_REF_NAME -eq "$($manifest.name)-$($manifest.version)") {
-              [pscustomobject]@{ Path = $_.FullName; Manifest = $manifest }
-            }
-          }
-          if (@($matches).Count -ne 1) { throw "Tag '$env:GITHUB_REF_NAME' must match exactly one package manifest." }
-          $package = @($matches)[0]
-          $listed = $listing.packages.($package.Manifest.name).versions.($package.Manifest.version)
-          if ($null -eq $listed) {
-            throw "Package '$($package.Manifest.name)' is not listed for publication in vpm.json."
-          }
-          "PACKAGE_PATH=$($package.Path)" >> $env:GITHUB_ENV
+          set -euo pipefail
+          shopt -s nullglob
+
+          matches=()
+          for manifest_path in packages/*/package.json; do
+            package_name="$(jq -er '.name' "$manifest_path")"
+            package_version="$(jq -er '.version' "$manifest_path")"
+            if [[ "$GITHUB_REF_NAME" == "$package_name-$package_version" ]]; then
+              matches+=("$(dirname "$manifest_path")")
+            fi
+          done
+
+          if (( ${#matches[@]} != 1 )); then
+            echo "Tag '$GITHUB_REF_NAME' must match exactly one package manifest." >&2
+            exit 1
+          fi
+
+          package_path="${matches[0]}"
+          package_name="$(jq -er '.name' "$package_path/package.json")"
+          package_version="$(jq -er '.version' "$package_path/package.json")"
+          if ! jq -e --arg name "$package_name" --arg version "$package_version" \
+            '.packages[$name].versions[$version] != null' vpm.json > /dev/null; then
+            echo "Package '$package_name' is not listed for publication in vpm.json." >&2
+            exit 1
+          fi
+
+          echo "PACKAGE_PATH=$package_path" >> "$GITHUB_ENV"
       - name: Create VPM archive
-        shell: pwsh
         run: |
-          $manifest = Get-Content -Raw "$env:PACKAGE_PATH/package.json" | ConvertFrom-Json
-          $archive = "$($manifest.name)-$($manifest.version).zip"
-          Compress-Archive -Path "$env:PACKAGE_PATH/*" -DestinationPath $archive
-          "ARCHIVE=$archive" >> $env:GITHUB_ENV
+          set -euo pipefail
+          package_name="$(jq -er '.name' "$PACKAGE_PATH/package.json")"
+          package_version="$(jq -er '.version' "$PACKAGE_PATH/package.json")"
+          archive="$package_name-$package_version.zip"
+          (
+            cd "$PACKAGE_PATH"
+            zip -qr "$GITHUB_WORKSPACE/$archive" .
+          )
+          echo "ARCHIVE=$archive" >> "$GITHUB_ENV"
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
