@@ -1,0 +1,18 @@
+{
+  "name": "net.minetake.hand-tracking-mode",
+  "displayName": "Hand Tracking Mode",
+  "version": "1.0.0",
+  "unity": "2022.3",
+  "description": "Generates a Modular Avatar prefab for switching avatar fingers between animation and VRChat tracking.",
+  "author": {
+    "name": "Minetake"
+  },
+  "license": "MIT",
+  "licenseUrl": "https://github.com/minetake01/vpm-repos/blob/develop/LICENSE",
+  "documentationUrl": "https://github.com/minetake01/vpm-repos/tree/develop/packages/net.minetake.hand-tracking-mode/Documentation~",
+  "changelogUrl": "https://github.com/minetake01/vpm-repos/releases",
+  "vpmDependencies": {
+    "com.vrchat.avatars": ">=3.10.4 <4.0.0",
+    "nadena.dev.modular-avatar": ">=1.18.1 <2.0.0-a"
+  }
+}

@@ -10,6 +10,12 @@
 
 Unity 2022.3.22f1の標準Rename操作から、`Assets` 配下のフォルダについて表示名だけを変えるか、実フォルダ名を変えるか選択できるVRChat向けEditorパッケージです。表示名が設定されたフォルダは黄色で表示され、Projectウィンドウ内では表示名を優先して自然順に並びます。
 
+### developブランチ限定
+
+- Hand Tracking Mode
+
+選択したアバターから、AnimationとVRChatの指トラッキングを手動で切り替えるModular Avatar prefabを生成する開発中のEditorパッケージです。公開用の `main` ブランチとVPM listingには含めません。
+
 ## 公開手順
 
 1. GitHubに `minetake01/vpm-repos` としてpushします。
