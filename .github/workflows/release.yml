@@ -1,0 +1,38 @@
+name: Publish VPM package
+
+on:
+  push:
+    tags:
+      - net.minetake.folder-alias-*
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Validate tag and package version
+        shell: pwsh
+        run: |
+          $matches = Get-ChildItem packages -Directory | ForEach-Object {
+            $manifestPath = Join-Path $_.FullName 'package.json'
+            $manifest = Get-Content -Raw $manifestPath | ConvertFrom-Json
+            if ($env:GITHUB_REF_NAME -eq "$($manifest.name)-$($manifest.version)") {
+              [pscustomobject]@{ Path = $_.FullName; Manifest = $manifest }
+            }
+          }
+          if (@($matches).Count -ne 1) { throw "Tag '$env:GITHUB_REF_NAME' must match exactly one package manifest." }
+          "PACKAGE_PATH=$($matches.Path)" >> $env:GITHUB_ENV
+      - name: Create VPM archive
+        shell: pwsh
+        run: |
+          $manifest = Get-Content -Raw "$env:PACKAGE_PATH/package.json" | ConvertFrom-Json
+          $archive = "$($manifest.name)-$($manifest.version).zip"
+          Compress-Archive -Path "$env:PACKAGE_PATH/*" -DestinationPath $archive
+          "ARCHIVE=$archive" >> $env:GITHUB_ENV
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" "${ARCHIVE}" --generate-notes --title "${GITHUB_REF_NAME}"

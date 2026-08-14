@@ -1,0 +1,11 @@
+{
+  "name": "Minetake.FolderAlias.Editor",
+  "rootNamespace": "Minetake.FolderAlias.Editor",
+  "references": [],
+  "includePlatforms": [ "Editor" ],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "0Harmony.dll"
+  ],
+  "autoReferenced": true
+}
