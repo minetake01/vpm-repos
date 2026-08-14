@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>VCCにリポジトリを追加</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        background: #111827;
+        color: #f9fafb;
+      }
+
+      main {
+        width: min(34rem, calc(100% - 3rem));
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0 0 1rem;
+        font-size: clamp(1.5rem, 5vw, 2.25rem);
+      }
+
+      p {
+        line-height: 1.7;
+        color: #d1d5db;
+      }
+
+      .button {
+        display: inline-block;
+        margin: 1rem 0;
+        padding: 0.8rem 1.4rem;
+        border-radius: 0.5rem;
+        background: #2563eb;
+        color: #fff;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      code {
+        display: block;
+        padding: 0.8rem;
+        border-radius: 0.5rem;
+        overflow-wrap: anywhere;
+        background: #1f2937;
+        color: #e5e7eb;
+        text-align: left;
+        user-select: all;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>VCCにリポジトリを追加</h1>
+      <p>VRChat Creator Companion を開いています。</p>
+      <p>
+        自動的に開かない場合は、下のボタンを押してください。
+      </p>
+      <p>
+        <a class="button" id="add-to-vcc" href="#">VCCに追加</a>
+      </p>
+      <p>VCC の Settings → Packages から手動で追加する場合:</p>
+      <code>https://minetake01.github.io/vpm-repos/vpm.json</code>
+    </main>
+    <script>
+      const repositoryUrl = "https://minetake01.github.io/vpm-repos/vpm.json";
+      const vccUrl = `vcc://vpm/addRepo?url=${encodeURIComponent(repositoryUrl)}`;
+      const addToVcc = document.getElementById("add-to-vcc");
+
+      addToVcc.href = vccUrl;
+      window.location.replace(vccUrl);
+    </script>
+  </body>
+</html>
