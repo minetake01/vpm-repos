@@ -8,7 +8,7 @@
     "name": "Minetake"
   },
   "license": "MIT",
-  "licenseUrl": "https://github.com/minetake01/vpm-repos/blob/develop/LICENSE",
+  "licenseUrl": "https://github.com/minetake01/vpm-repos/blob/develop/packages/net.minetake.hand-tracking-mode/LICENSE.md",
   "documentationUrl": "https://github.com/minetake01/vpm-repos/tree/develop/packages/net.minetake.hand-tracking-mode/Documentation~",
   "changelogUrl": "https://github.com/minetake01/vpm-repos/releases",
   "vpmDependencies": {

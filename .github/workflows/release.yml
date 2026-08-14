@@ -3,7 +3,7 @@ name: Publish VPM package
 on:
   push:
     tags:
-      - net.minetake.folder-alias-*
+      - net.minetake.*-*
 
 permissions:
   contents: write
@@ -16,6 +16,7 @@ jobs:
       - name: Validate tag and package version
         shell: pwsh
         run: |
+          $listing = Get-Content -Raw vpm.json | ConvertFrom-Json
           $matches = Get-ChildItem packages -Directory | ForEach-Object {
             $manifestPath = Join-Path $_.FullName 'package.json'
             $manifest = Get-Content -Raw $manifestPath | ConvertFrom-Json
@@ -24,7 +25,12 @@ jobs:
             }
           }
           if (@($matches).Count -ne 1) { throw "Tag '$env:GITHUB_REF_NAME' must match exactly one package manifest." }
-          "PACKAGE_PATH=$($matches.Path)" >> $env:GITHUB_ENV
+          $package = @($matches)[0]
+          $listed = $listing.packages.($package.Manifest.name).versions.($package.Manifest.version)
+          if ($null -eq $listed) {
+            throw "Package '$($package.Manifest.name)' is not listed for publication in vpm.json."
+          }
+          "PACKAGE_PATH=$($package.Path)" >> $env:GITHUB_ENV
       - name: Create VPM archive
         shell: pwsh
         run: |

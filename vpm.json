@@ -6,46 +6,20 @@
   "packages": {
     "net.minetake.folder-alias": {
       "versions": {
-        "1.0.0": {
+        "1.0.1": {
           "name": "net.minetake.folder-alias",
           "displayName": "Folder Alias",
-          "version": "1.0.0",
+          "version": "1.0.1",
           "unity": "2022.3",
           "description": "Lets Unity 2022.3.22f1 users choose between a display-only folder name and a physical rename from the standard Rename workflow.",
           "author": {
             "name": "Minetake"
           },
           "license": "MIT",
-          "licenseUrl": "https://github.com/minetake01/vpm-repos/blob/main/LICENSE",
+          "licenseUrl": "https://github.com/minetake01/vpm-repos/blob/main/packages/net.minetake.folder-alias/LICENSE.md",
           "documentationUrl": "https://github.com/minetake01/vpm-repos/tree/main/packages/net.minetake.folder-alias/Documentation~",
           "changelogUrl": "https://github.com/minetake01/vpm-repos/releases",
-          "url": "https://github.com/minetake01/vpm-repos/releases/download/net.minetake.folder-alias-1.0.0/net.minetake.folder-alias-1.0.0.zip",
-          "vpmDependencies": {
-            "com.vrchat.base": ">=3.10.4 <4.0.0"
-          }
-        }
-      }
-    },
-    "net.minetake.hand-tracking-mode": {
-      "versions": {
-        "1.0.0": {
-          "name": "net.minetake.hand-tracking-mode",
-          "displayName": "Hand Tracking Mode",
-          "version": "1.0.0",
-          "unity": "2022.3",
-          "description": "Generates a Modular Avatar prefab for switching avatar fingers between animation and VRChat tracking.",
-          "author": {
-            "name": "Minetake"
-          },
-          "license": "MIT",
-          "licenseUrl": "https://github.com/minetake01/vpm-repos/blob/develop/LICENSE",
-          "documentationUrl": "https://github.com/minetake01/vpm-repos/tree/develop/packages/net.minetake.hand-tracking-mode/Documentation~",
-          "changelogUrl": "https://github.com/minetake01/vpm-repos/releases",
-          "url": "https://github.com/minetake01/vpm-repos/releases/download/net.minetake.hand-tracking-mode-1.0.0/net.minetake.hand-tracking-mode-1.0.0.zip",
-          "vpmDependencies": {
-            "com.vrchat.avatars": ">=3.10.4 <4.0.0",
-            "nadena.dev.modular-avatar": ">=1.18.1 <2.0.0-a"
-          }
+          "url": "https://github.com/minetake01/vpm-repos/releases/download/net.minetake.folder-alias-1.0.1/net.minetake.folder-alias-1.0.1.zip"
         }
       }
     }
