@@ -1,15 +1,12 @@
 {
   "name": "net.minetake.folder-alias",
   "displayName": "Folder Alias",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "unity": "2022.3",
   "description": "Lets Unity 2022.3.22f1 users choose between a display-only folder name and a physical rename from the standard Rename workflow.",
   "author": { "name": "Minetake" },
   "license": "MIT",
-  "licenseUrl": "https://github.com/minetake01/vpm-repos/blob/main/LICENSE",
+  "licenseUrl": "https://github.com/minetake01/vpm-repos/blob/main/packages/net.minetake.folder-alias/LICENSE.md",
   "documentationUrl": "https://github.com/minetake01/vpm-repos/tree/main/packages/net.minetake.folder-alias/Documentation~",
-  "changelogUrl": "https://github.com/minetake01/vpm-repos/releases",
-  "vpmDependencies": {
-    "com.vrchat.base": ">=3.10.4 <4.0.0"
-  }
+  "changelogUrl": "https://github.com/minetake01/vpm-repos/releases"
 }
